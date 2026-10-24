@@ -6,6 +6,9 @@
 sed -i "/attendedsysupgrade/d" $(find ./feeds/luci/collections/ -type f -name "Makefile")
 #修改默认主题
 sed -i "s/luci-theme-bootstrap/luci-theme-$WRT_THEME/g" $(find ./feeds/luci/collections/ -type f -name "Makefile")
+#保持 alpha 为默认主题，避免其它主题的 uci-defaults 覆盖
+sed -i "s|option mediaurlbase '/luci-static/bootstrap'|option mediaurlbase '/luci-static/$WRT_THEME'|" ./feeds/luci/modules/luci-base/root/etc/config/luci 2>/dev/null || true
+find ./package/luci-theme-argon ./package/luci-theme-glass -type f -path '*/uci-defaults/*' -exec sed -i '/luci\.main\.mediaurlbase/d' {} + 2>/dev/null || true
 #修改immortalwrt.lan关联IP
 sed -i "s/192\.168\.[0-9]*\.[0-9]*/$WRT_IP/g" $(find ./feeds/luci/modules/luci-mod-system/ -type f -name "flash.js")
 #添加编译日期标识

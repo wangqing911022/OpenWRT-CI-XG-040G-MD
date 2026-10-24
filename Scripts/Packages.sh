@@ -55,7 +55,8 @@ if [ ! -d "./libs/libffi" ] && [ ! -d "./libffi" ]; then
 	echo "libffi has been added!"
 fi
 
-#UPDATE_PACKAGE "argon" "sbwml/luci-theme-argon" "openwrt-25.12"
+UPDATE_PACKAGE "argon" "sbwml/luci-theme-argon" "openwrt-25.12"
+UPDATE_PACKAGE "glass" "rchen14b/luci-theme-glass" "main"
 UPDATE_PACKAGE "alpha" "derisamedia/luci-theme-alpha" "master"
 UPDATE_PACKAGE "alpha-config" "animegasan/luci-app-alpha-config" "master"
 #UPDATE_PACKAGE "shadcn" "eamonxg/luci-theme-shadcn" "main"
