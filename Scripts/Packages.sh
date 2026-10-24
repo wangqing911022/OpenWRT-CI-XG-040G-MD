@@ -55,6 +55,14 @@ if [ ! -d "./libs/libffi" ] && [ ! -d "./libffi" ]; then
 	echo "libffi has been added!"
 fi
 
+#iStore 商店（含 taskd、luci-lib-taskd、luci-lib-xterm）
+if [ ! -d "./luci-app-store" ]; then
+	git clone -q --depth=1 --single-branch --branch main https://github.com/istoreos/istore.git ./istore-src
+	cp -rf ./istore-src/luci/luci-app-store ./istore-src/luci/luci-lib-taskd ./istore-src/luci/luci-lib-xterm ./istore-src/luci/taskd ./
+	rm -rf ./istore-src
+	echo "istore has been added!"
+fi
+
 UPDATE_PACKAGE "argon" "sbwml/luci-theme-argon" "openwrt-25.12"
 UPDATE_PACKAGE "glass" "rchen14b/luci-theme-glass" "main"
 UPDATE_PACKAGE "alpha" "derisamedia/luci-theme-alpha" "master"
@@ -69,7 +77,7 @@ UPDATE_PACKAGE "aurora-config" "eamonxg/luci-app-aurora-config" "master"
 #UPDATE_PACKAGE "momo" "nikkinikki-org/OpenWrt-momo" "main"
 #UPDATE_PACKAGE "nikki" "nikkinikki-org/OpenWrt-nikki" "main"
 UPDATE_PACKAGE "openclash" "vernesong/OpenClash" "dev" "pkg"
-#UPDATE_PACKAGE "passwall" "Openwrt-Passwall/openwrt-passwall" "main" "pkg"
+UPDATE_PACKAGE "passwall" "Openwrt-Passwall/openwrt-passwall" "main" "pkg"
 #UPDATE_PACKAGE "passwall2" "Openwrt-Passwall/openwrt-passwall2" "main" "pkg"
 
 #UPDATE_PACKAGE "luci-app-tailscale" "asvow/luci-app-tailscale" "main"
