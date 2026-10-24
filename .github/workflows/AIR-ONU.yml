@@ -6,11 +6,6 @@ name: AIR-ONU
 
 #CI计划
 on:
-  #自动编译：当Auto-Clean运行完成后
-  workflow_run:
-    workflows: ["Auto-Clean"]
-    types:
-      - completed
   #手动编译
   workflow_dispatch:
     inputs:
@@ -45,7 +40,7 @@ jobs:
       #编译配置
       WRT_CONFIG: ${{matrix.CONFIG}}
       #默认主题
-      WRT_THEME: argon
+      WRT_THEME: alpha
       #默认主机名
       WRT_NAME: OWRT
       #默认WIFI名称

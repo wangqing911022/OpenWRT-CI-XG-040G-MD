@@ -18,8 +18,7 @@ on:
         required: false
         type: boolean
 
-permissions:
-  contents: write          # record_sha 需要 push SHA 文件
+permissions: write-all   # 编译缓存与发布需要写权限
 
 # 防止定时任务与手动任务同时 push 冲突
 concurrency:
@@ -95,7 +94,7 @@ jobs:
     uses: ./.github/workflows/WRT-CORE.yml
     with:
       WRT_CONFIG: ${{ matrix.CONFIG }}
-      WRT_THEME: argon
+      WRT_THEME: alpha
       WRT_NAME: OWRT
       WRT_SSID: OWRT
       WRT_WORD: "12345678"
