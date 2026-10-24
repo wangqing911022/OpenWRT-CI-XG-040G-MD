@@ -47,6 +47,14 @@ UPDATE_PACKAGE() {
 # UPDATE_PACKAGE "open-app-filter" "destan19/OpenAppFilter" "master" "" "luci-app-appfilter oaf" 这样会把原有的open-app-filter，luci-app-appfilter，oaf相关组件删除，不会出现coremark错误。
 
 # UPDATE_PACKAGE "包名" "项目地址" "项目分支" "pkg/name，可选，pkg为从大杂烩中单独提取包名插件；name为重命名为包名"
+
+#补齐上游源码缺失的 libffi（python3、glib2 等编译依赖）
+if [ ! -d "./libs/libffi" ] && [ ! -d "./libffi" ]; then
+	mkdir -p ./libffi
+	cp -f "$GITHUB_WORKSPACE/Packages/libffi/Makefile" ./libffi/
+	echo "libffi has been added!"
+fi
+
 #UPDATE_PACKAGE "argon" "sbwml/luci-theme-argon" "openwrt-25.12"
 UPDATE_PACKAGE "alpha" "derisamedia/luci-theme-alpha" "master"
 UPDATE_PACKAGE "alpha-config" "animegasan/luci-app-alpha-config" "master"
