@@ -26,6 +26,7 @@ CONFIG_PACKAGE_kmod-usb-net-rndis=m
 CONFIG_PACKAGE_kmod-usb-net-cdc-ether=m
 #soc 状态
 CONFIG_PACKAGE_luci-app-airoha-npu=y
+CONFIG_PACKAGE_luci-i18n-airoha-npu-zh-cn=y
 CONFIG_PACKAGE_vlmcsd=y
 #
 # PON
@@ -45,11 +46,8 @@ CONFIG_PACKAGE_airoha-pond=y
 CONFIG_PACKAGE_luci-app-pon=y
 CONFIG_PACKAGE_luci-app-iptv=y
 #themes
-CONFIG_PACKAGE_luci-theme-alpha=y
-CONFIG_PACKAGE_luci-app-alpha-config=y
 CONFIG_PACKAGE_luci-theme-argon=y
 CONFIG_PACKAGE_luci-app-argon-config=y
-CONFIG_PACKAGE_luci-theme-glass=y
 CONFIG_PACKAGE_jsonfilter=y
 
 #iStore 商店
@@ -81,6 +79,46 @@ CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Simple_Obfs=n
 CONFIG_PACKAGE_luci-app-passwall_INCLUDE_V2ray_Plugin=n
 CONFIG_PACKAGE_luci-app-passwall_INCLUDE_V2ray_Geodata=n
 CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Xray_Plugin=n
+
+#Quickstart 首页
+CONFIG_PACKAGE_quickstart=y
+CONFIG_PACKAGE_luci-app-quickstart=y
+CONFIG_PACKAGE_luci-app-nlbwmon=y
+CONFIG_PACKAGE_nlbwmon=y
+CONFIG_PACKAGE_luci-lib-jsonc=y
+CONFIG_PACKAGE_luci-lib-json=y
+CONFIG_PACKAGE_luci-lib-nixio=y
+CONFIG_PACKAGE_shadow-utils=y
+CONFIG_PACKAGE_shadow-useradd=y
+CONFIG_PACKAGE_smartd=y
+CONFIG_PACKAGE_smartmontools=y
+CONFIG_PACKAGE_smartmontools-drivedb=y
+CONFIG_PACKAGE_lsblk=y
+CONFIG_PACKAGE_parted=y
+CONFIG_PACKAGE_mdadm=y
+CONFIG_PACKAGE_block-mount=y
+CONFIG_PACKAGE_e2fsprogs=y
+CONFIG_PACKAGE_bash=y
+#Homebox / netspeedtest
+CONFIG_PACKAGE_homebox=y
+CONFIG_PACKAGE_ookla-speedtest=y
+CONFIG_PACKAGE_luci-app-netspeedtest=y
+CONFIG_PACKAGE_jq=y
+CONFIG_PACKAGE_iperf3=y
+CONFIG_PACKAGE_python3-light=y
+CONFIG_PACKAGE_python3-pkg-resources=y
+CONFIG_PACKAGE_python3-xml=y
+CONFIG_PACKAGE_python3-email=y
+CONFIG_PACKAGE_python3-urllib=y
+CONFIG_PACKAGE_python3-codecs=y
+CONFIG_PACKAGE_python3-openssl=y
+#ttyd / wrtbwmon / taskplan
+CONFIG_PACKAGE_luci-app-ttyd=y
+CONFIG_PACKAGE_ttyd=y
+CONFIG_PACKAGE_luci-app-wrtbwmon=y
+CONFIG_PACKAGE_wrtbwmon=y
+CONFIG_PACKAGE_iptables=y
+CONFIG_PACKAGE_luci-app-taskplan=y
 
 #i2c
 CONFIG_PACKAGE_i2c-tools=y

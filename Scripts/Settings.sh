@@ -6,9 +6,9 @@
 sed -i "/attendedsysupgrade/d" $(find ./feeds/luci/collections/ -type f -name "Makefile")
 #修改默认主题
 sed -i "s/luci-theme-bootstrap/luci-theme-$WRT_THEME/g" $(find ./feeds/luci/collections/ -type f -name "Makefile")
-#保持 alpha 为默认主题，避免其它主题的 uci-defaults 覆盖
+#设置 argon 为默认主题
 sed -i "s|option mediaurlbase '/luci-static/bootstrap'|option mediaurlbase '/luci-static/$WRT_THEME'|" ./feeds/luci/modules/luci-base/root/etc/config/luci 2>/dev/null || true
-find ./package/luci-theme-argon ./package/luci-theme-glass -type f -path '*/uci-defaults/*' -exec sed -i '/luci\.main\.mediaurlbase/d' {} + 2>/dev/null || true
+find ./package/luci-theme-argon -type f -path '*/uci-defaults/*' -exec sed -i '/luci\.main\.mediaurlbase/d' {} + 2>/dev/null || true
 #修改immortalwrt.lan关联IP
 sed -i "s/192\.168\.[0-9]*\.[0-9]*/$WRT_IP/g" $(find ./feeds/luci/modules/luci-mod-system/ -type f -name "flash.js")
 #添加编译日期标识
@@ -37,6 +37,20 @@ CFG_FILE="./package/base-files/files/bin/config_generate"
 sed -i "s/192\.168\.[0-9]*\.[0-9]*/$WRT_IP/g" $CFG_FILE
 #修改默认主机名
 sed -i "s/hostname='.*'/hostname='$WRT_NAME'/g" $CFG_FILE
+
+#默认时区上海，默认关闭防火墙流量分载（保留 LuCI 手动开启选项）
+mkdir -p ./package/base-files/files/etc/uci-defaults
+cat > ./package/base-files/files/etc/uci-defaults/99-custom-defaults <<'EOF'
+#!/bin/sh
+uci -q set system.@system[0].timezone='CST-8'
+uci -q set system.@system[0].zonename='Asia/Shanghai'
+uci -q commit system
+uci -q set firewall.@defaults[0].flow_offloading='0'
+uci -q set firewall.@defaults[0].flow_offloading_hw='0'
+uci -q commit firewall
+exit 0
+EOF
+chmod +x ./package/base-files/files/etc/uci-defaults/99-custom-defaults
 
 #配置文件修改
 echo "CONFIG_PACKAGE_luci=y" >> ./.config

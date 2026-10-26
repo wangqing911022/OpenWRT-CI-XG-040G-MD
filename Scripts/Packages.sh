@@ -63,15 +63,47 @@ if [ ! -d "./luci-app-store" ]; then
 	echo "istore has been added!"
 fi
 
+#Quickstart 首页（iStoreOS 后端 + LuCI 前端）
+if [ ! -d "./quickstart" ]; then
+	git clone -q --depth=1 --single-branch --branch master https://github.com/linkease/nas-packages.git ./nas-packages-src
+	cp -rf ./nas-packages-src/network/services/quickstart ./
+	rm -rf ./nas-packages-src
+	echo "quickstart backend has been added!"
+fi
+UPDATE_PACKAGE "quickstart" "animegasan/luci-app-quickstart" "main"
+
+#Homebox / netspeedtest
+if [ ! -d "./homebox" ]; then
+	git clone -q --depth=1 --single-branch --branch main https://github.com/sirpdboy/netspeedtest.git ./netspeedtest-src
+	cp -rf ./netspeedtest-src/homebox ./netspeedtest-src/luci-app-netspeedtest ./netspeedtest-src/ookla-speedtest ./
+	rm -rf ./netspeedtest-src
+	echo "netspeedtest/homebox has been added!"
+fi
+
+#任务计划
+if [ ! -d "./luci-app-taskplan" ]; then
+	git clone -q --depth=1 --single-branch --branch main https://github.com/sirpdboy/luci-app-taskplan.git ./taskplan-src
+	cp -rf ./taskplan-src/luci-app-taskplan ./
+	rm -rf ./taskplan-src
+	echo "luci-app-taskplan has been added!"
+fi
+
+#流量统计（LuCI + 后端）
+if [ ! -d "./luci-app-wrtbwmon" ]; then
+	git clone -q --depth=1 --single-branch --branch master https://github.com/brvphoenix/luci-app-wrtbwmon.git ./wrtbwmon-src
+	cp -rf ./wrtbwmon-src/luci-app-wrtbwmon ./
+	rm -rf ./wrtbwmon-src
+	echo "luci-app-wrtbwmon has been added!"
+fi
+if [ ! -d "./wrtbwmon" ]; then
+	git clone -q --depth=1 --single-branch --branch master https://github.com/brvphoenix/wrtbwmon.git ./wrtbwmon-backend-src
+	cp -rf ./wrtbwmon-backend-src/wrtbwmon ./
+	rm -rf ./wrtbwmon-backend-src
+	echo "wrtbwmon backend has been added!"
+fi
+
+#argon 主题（保留唯一主题，openwrt-25.12 为当前最新分支）
 UPDATE_PACKAGE "argon" "sbwml/luci-theme-argon" "openwrt-25.12"
-UPDATE_PACKAGE "glass" "rchen14b/luci-theme-glass" "main"
-UPDATE_PACKAGE "alpha" "derisamedia/luci-theme-alpha" "master"
-UPDATE_PACKAGE "alpha-config" "animegasan/luci-app-alpha-config" "master"
-#UPDATE_PACKAGE "shadcn" "eamonxg/luci-theme-shadcn" "main"
-UPDATE_PACKAGE "aurora" "eamonxg/luci-theme-aurora" "master"
-UPDATE_PACKAGE "aurora-config" "eamonxg/luci-app-aurora-config" "master"
-#UPDATE_PACKAGE "kucat" "sirpdboy/luci-theme-kucat" "master"
-#UPDATE_PACKAGE "kucat-config" "sirpdboy/luci-app-kucat-config" "master"
 
 #UPDATE_PACKAGE "homeproxy" "VIKINGYFY/homeproxy" "main"
 #UPDATE_PACKAGE "momo" "nikkinikki-org/OpenWrt-momo" "main"
@@ -98,7 +130,7 @@ UPDATE_PACKAGE "qmodem" "FUjr/QModem" "main"
 #UPDATE_PACKAGE "timecontrol" "sirpdboy/luci-app-timecontrol" "main"
 UPDATE_PACKAGE "viking" "VIKINGYFY/packages" "main" "" "gecoosac luci-app-timewol luci-app-wolplus"
 #UPDATE_PACKAGE "vnt" "lmq8267/luci-app-vnt" "main"
-UPDATE_PACKAGE "luci-app-airoha-npu" "bingoguo93/luci-app-airoha-npu" "main"
+UPDATE_PACKAGE "luci-app-airoha-npu" "luanmuc/luci-app-airoha-npu" "main"
 UPDATE_PACKAGE "luci-app-lucky" "sirpdboy/luci-app-lucky" "main"
 UPDATE_PACKAGE "luci-app-tailscale-community" "Tokisaki-Galaxy/luci-app-tailscale-community" "master" "" "luci-app-tailscale-community"
 
