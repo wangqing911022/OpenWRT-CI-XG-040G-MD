@@ -214,11 +214,10 @@ jobs:
 
             find ./bin/targets/ -iregex ".*\(buildinfo\|json\|sha256sums\|packages\)$" -exec rm -rf {} +
 
-            WRT_DATE_SHORT="${WRT_DATE#*.}"
             for FILE in $(find ./bin/targets/ -type f -iname "*$WRT_TARGET*") ; do
               EXT=$(basename $FILE | cut -d '.' -f 2-)
               NAME=$(basename $FILE | cut -d '.' -f 1 | grep -io "\($WRT_TARGET\).*")
-              NEW_FILE="$NAME"-"WQ"-"$WRT_DATE_SHORT"."$EXT"
+              NEW_FILE="$NAME"-"WQ"-"$WRT_DATE"."$EXT"
               mv -f $FILE ./upload/$NEW_FILE
             done
 
