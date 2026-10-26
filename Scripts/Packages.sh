@@ -71,6 +71,8 @@ if [ ! -d "./quickstart" ]; then
 	echo "quickstart backend has been added!"
 fi
 UPDATE_PACKAGE "quickstart" "animegasan/luci-app-quickstart" "main"
+#修复 apk 不接受 1.0.2-20230817 这种版本号
+sed -i 's/^PKG_VERSION:=\([0-9.]*\)-\([0-9]*\)$/PKG_VERSION:=\1\nPKG_RELEASE:=\2/' ./luci-app-quickstart/Makefile
 
 #Homebox / netspeedtest
 if [ ! -d "./homebox" ]; then
