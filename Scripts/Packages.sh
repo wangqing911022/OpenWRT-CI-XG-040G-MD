@@ -81,6 +81,8 @@ if [ ! -d "./homebox" ]; then
 	rm -rf ./netspeedtest-src
 	echo "netspeedtest/homebox has been added!"
 fi
+#修复当前软件源不存在的 python3 子包依赖
+sed -i 's/ +python3-pkg-resources//; s/ +python3-email//' ./luci-app-netspeedtest/Makefile
 
 #任务计划
 if [ ! -d "./luci-app-taskplan" ]; then
