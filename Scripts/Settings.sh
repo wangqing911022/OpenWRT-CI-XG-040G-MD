@@ -48,9 +48,60 @@ uci -q commit system
 uci -q set firewall.@defaults[0].flow_offloading='0'
 uci -q set firewall.@defaults[0].flow_offloading_hw='0'
 uci -q commit firewall
+uci -q delete luci.themes.Alpha
+uci -q delete luci.themes.Glass
+uci -q delete luci.themes.Aurora
+uci -q delete luci.themes.Liquid
+uci -q set luci.main.mediaurlbase='/luci-static/argon'
+uci -q commit luci
 exit 0
 EOF
 chmod +x ./package/base-files/files/etc/uci-defaults/99-custom-defaults
+
+#USB 网络共享自动配置（RNDIS/ECM/NCM）
+mkdir -p ./package/base-files/files/etc/hotplug.d/net
+cat > ./package/base-files/files/etc/hotplug.d/net/40-usb-tethering <<'USB_TETH_EOF'
+#!/bin/sh
+[ "$ACTION" = "add" ] || exit 0
+[ -n "$INTERFACE" ] || exit 0
+case "$INTERFACE" in
+	usb*|eth1|eth2|wwan*) ;;
+	*) exit 0 ;;
+esac
+DRIVER=$(readlink -f /sys/class/net/"$INTERFACE"/device/driver 2>/dev/null)
+case "$DRIVER" in
+	*rndis_host*|*cdc_ether*|*cdc_ncm*|*usbnet*|*ipheth*) ;;
+	*) exit 0 ;;
+esac
+uci -q batch <<-EOF
+delete network.usbwan
+set network.usbwan=interface
+set network.usbwan.proto='dhcp'
+set network.usbwan.device='$INTERFACE'
+set network.usbwan.metric='50'
+commit network
+EOF
+if ! uci -q get firewall.usbwan >/dev/null 2>&1; then
+	uci -q batch <<-EOF
+set firewall.usbwan=zone
+set firewall.usbwan.name='usbwan'
+set firewall.usbwan.input='REJECT'
+set firewall.usbwan.output='ACCEPT'
+set firewall.usbwan.forward='REJECT'
+set firewall.usbwan.masq='1'
+set firewall.usbwan.mtu_fix='1'
+set firewall.usbwan.network='usbwan'
+add firewall forwarding
+set firewall.@forwarding[-1].src='lan'
+set firewall.@forwarding[-1].dest='usbwan'
+commit firewall
+EOF
+fi
+/etc/init.d/network reload
+/etc/init.d/firewall reload
+exit 0
+USB_TETH_EOF
+chmod +x ./package/base-files/files/etc/hotplug.d/net/40-usb-tethering
 
 #配置文件修改
 echo "CONFIG_PACKAGE_luci=y" >> ./.config

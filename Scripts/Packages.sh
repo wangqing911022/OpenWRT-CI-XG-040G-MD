@@ -63,16 +63,21 @@ if [ ! -d "./luci-app-store" ]; then
 	echo "istore has been added!"
 fi
 
-#Quickstart 首页（iStoreOS 后端 + LuCI 前端）
+#Quickstart 首页（iStoreOS 后端 + 官方中文前端）
 if [ ! -d "./quickstart" ]; then
 	git clone -q --depth=1 --single-branch --branch master https://github.com/linkease/nas-packages.git ./nas-packages-src
 	cp -rf ./nas-packages-src/network/services/quickstart ./
 	rm -rf ./nas-packages-src
 	echo "quickstart backend has been added!"
 fi
-UPDATE_PACKAGE "quickstart" "animegasan/luci-app-quickstart" "main"
-#修复 apk 不接受 1.0.2-20230817 这种版本号
-sed -i 's/^PKG_VERSION:=\([0-9.]*\)-\([0-9]*\)$/PKG_VERSION:=\1\nPKG_RELEASE:=\2/' ./luci-app-quickstart/Makefile
+if [ ! -d "./luci-app-quickstart" ]; then
+	git clone -q --depth=1 --single-branch --branch main https://github.com/linkease/nas-packages-luci.git ./nas-luci-src
+	cp -rf ./nas-luci-src/luci/luci-app-quickstart ./
+	rm -rf ./nas-luci-src
+	#修复 apk 不接受 0.12.10-r1 这种版本号
+	sed -i 's/^PKG_VERSION:=0.12.10-r1$/PKG_VERSION:=0.12.10\nPKG_RELEASE:=1/' ./luci-app-quickstart/Makefile
+	echo "official quickstart UI has been added!"
+fi
 
 #Homebox / netspeedtest
 if [ ! -d "./homebox" ]; then
@@ -83,6 +88,13 @@ if [ ! -d "./homebox" ]; then
 fi
 #修复当前软件源不存在的 python3 子包依赖
 sed -i 's/ +python3-pkg-resources//; s/ +python3-email//' ./luci-app-netspeedtest/Makefile
+#修复 Homebox 保存/开机自启权限
+NETSPEED_ACL="./luci-app-netspeedtest/root/usr/share/rpcd/acl.d/luci-app-netspeedtest.json"
+if [ -f "$NETSPEED_ACL" ]; then
+	jq '.read.uci = ["netspeedtest"] | .write.uci = ["netspeedtest"] | .read.file["/etc/init.d/netspeedtest"] = ["exec"] | .write.file["/etc/config/netspeedtest"] = ["write"] | .write.file["/etc/init.d/netspeedtest"] = ["exec"]' "$NETSPEED_ACL" > "$NETSPEED_ACL.tmp" && mv "$NETSPEED_ACL.tmp" "$NETSPEED_ACL"
+fi
+#点击启动/停止时同时保存自动启动状态
+sed -i "s|controlService(action, state.port)|saveConfiguration(state.port, action === 'start').then(function() { return controlService(action, state.port); })|" ./luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/homebox.js
 
 #任务计划
 if [ ! -d "./luci-app-taskplan" ]; then
