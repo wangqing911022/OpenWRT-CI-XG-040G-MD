@@ -17,14 +17,18 @@ CONFIG_BUSYBOX_CONFIG_DEVMEM=y
 CONFIG_PACKAGE_kmod-dummy=y
 CONFIG_PACKAGE_airoha-en7581-npu-firmware=y
 CONFIG_PACKAGE_airoha-en8811h-firmware=y
-# USB 网络共享（安卓 RNDIS / CDC-ECM）
-CONFIG_PACKAGE_kmod-libphy=m
-CONFIG_PACKAGE_kmod-mii=m
-CONFIG_PACKAGE_kmod-usb-core=m
-CONFIG_PACKAGE_kmod-usb-net=m
-CONFIG_PACKAGE_kmod-usb-net-rndis=m
-CONFIG_PACKAGE_kmod-usb-net-cdc-ether=m
-CONFIG_PACKAGE_kmod-usb-net-cdc-ncm=m
+# USB 网络共享（安卓 RNDIS / CDC-ECM / NCM / iPhone）
+CONFIG_PACKAGE_kmod-libphy=y
+CONFIG_PACKAGE_kmod-mii=y
+CONFIG_PACKAGE_kmod-usb-core=y
+CONFIG_PACKAGE_kmod-usb-net=y
+CONFIG_PACKAGE_kmod-usb-net-rndis=y
+CONFIG_PACKAGE_kmod-usb-net-cdc-ether=y
+CONFIG_PACKAGE_kmod-usb-net-cdc-ncm=y
+CONFIG_PACKAGE_kmod-usb-net-ipheth=y
+CONFIG_PACKAGE_kmod-usb-xhci-hcd=y
+CONFIG_PACKAGE_kmod-usb-xhci-mtk=y
+CONFIG_PACKAGE_kmod-usb3=y
 #soc 状态
 CONFIG_PACKAGE_luci-app-airoha-npu=y
 CONFIG_PACKAGE_luci-i18n-airoha-npu-zh-cn=y
@@ -45,7 +49,8 @@ CONFIG_PACKAGE_airoha-pond=y
 
 #luci
 CONFIG_PACKAGE_luci-app-pon=y
-CONFIG_PACKAGE_luci-app-iptv=y
+#ONU 插件自带 IPTV 配置，移除旧 iptv 插件避免 init 脚本冲突
+CONFIG_PACKAGE_luci-app-iptv=n
 #themes
 CONFIG_PACKAGE_luci-theme-argon=y
 CONFIG_PACKAGE_luci-app-argon-config=y
@@ -120,5 +125,16 @@ CONFIG_PACKAGE_wrtbwmon=y
 CONFIG_PACKAGE_iptables=y
 CONFIG_PACKAGE_luci-app-taskplan=y
 
+#ONU 配置
+CONFIG_PACKAGE_luci-app-onu=y
+CONFIG_PACKAGE_luci-i18n-onu-zh-cn=y
+CONFIG_PACKAGE_omcproxy=y
+CONFIG_PACKAGE_ppp-mod-pppoe=y
+CONFIG_PACKAGE_kmod-nf-conntrack-bridge=y
+
 #i2c
 CONFIG_PACKAGE_i2c-tools=y
+
+#系统与局域网设备监控（Web 端口 7752）
+CONFIG_PACKAGE_systemmon=y
+CONFIG_PACKAGE_luci-app-systemmon=y

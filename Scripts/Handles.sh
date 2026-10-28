@@ -30,8 +30,6 @@ fi
 if [ -d *"luci-theme-argon"* ]; then
 	echo " " && cd ./luci-theme-argon/
 
-	sed -i "s/primary '.*'/primary '#31a1a1'/; s/'0.2'/'0.5'/; s/'none'/'bing'/; s/'600'/'normal'/" ./luci-app-argon-config/root/etc/config/argon
-
 	#修复 Argon 首页内存/磁盘/网络进度条显示异常（新版 LuCI 状态页不使用 conic-gradient 标记）
 	ARGON_CSS="./luci-theme-argon/htdocs/luci-static/argon/css/cascade.css"
 	ARGON_DARK="./luci-theme-argon/htdocs/luci-static/argon/css/dark.css"

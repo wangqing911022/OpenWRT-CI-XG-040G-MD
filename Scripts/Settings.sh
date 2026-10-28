@@ -53,36 +53,22 @@ uci -q delete luci.themes.Glass
 uci -q delete luci.themes.Aurora
 uci -q delete luci.themes.Liquid
 uci -q set luci.main.mediaurlbase='/luci-static/argon'
+uci -q set argon.@global[0].primary='#5e72e4'
+uci -q set argon.@global[0].transparency='0.2'
+uci -q set argon.@global[0].online_wallpaper='none'
+uci -q set argon.@global[0].font_weight='600'
 uci -q commit luci
-exit 0
-EOF
-chmod +x ./package/base-files/files/etc/uci-defaults/99-custom-defaults
-
-#USB 网络共享自动配置（RNDIS/ECM/NCM）
-mkdir -p ./package/base-files/files/etc/hotplug.d/net
-cat > ./package/base-files/files/etc/hotplug.d/net/40-usb-tethering <<'USB_TETH_EOF'
-#!/bin/sh
-[ "$ACTION" = "add" ] || exit 0
-[ -n "$INTERFACE" ] || exit 0
-case "$INTERFACE" in
-	usb*|eth1|eth2|wwan*) ;;
-	*) exit 0 ;;
-esac
-DRIVER=$(readlink -f /sys/class/net/"$INTERFACE"/device/driver 2>/dev/null)
-case "$DRIVER" in
-	*rndis_host*|*cdc_ether*|*cdc_ncm*|*usbnet*|*ipheth*) ;;
-	*) exit 0 ;;
-esac
-uci -q batch <<-EOF
+uci -q commit argon
+uci -q batch <<-USBWAN_EOF
 delete network.usbwan
 set network.usbwan=interface
 set network.usbwan.proto='dhcp'
-set network.usbwan.device='$INTERFACE'
+set network.usbwan.device='usb0'
 set network.usbwan.metric='50'
 commit network
-EOF
+USBWAN_EOF
 if ! uci -q get firewall.usbwan >/dev/null 2>&1; then
-	uci -q batch <<-EOF
+	uci -q batch <<-USBWAN_EOF
 set firewall.usbwan=zone
 set firewall.usbwan.name='usbwan'
 set firewall.usbwan.input='REJECT'
@@ -95,8 +81,31 @@ add firewall forwarding
 set firewall.@forwarding[-1].src='lan'
 set firewall.@forwarding[-1].dest='usbwan'
 commit firewall
-EOF
+USBWAN_EOF
 fi
+exit 0
+EOF
+chmod +x ./package/base-files/files/etc/uci-defaults/99-custom-defaults
+
+#USB 网络共享自动配置（RNDIS/ECM/NCM）
+mkdir -p ./package/base-files/files/etc/hotplug.d/net
+cat > ./package/base-files/files/etc/hotplug.d/net/40-usb-tethering <<'USB_TETH_EOF'
+#!/bin/sh
+[ "$ACTION" = "add" ] || exit 0
+[ -n "$INTERFACE" ] || exit 0
+[ -e "/sys/class/net/$INTERFACE/device" ] || exit 0
+DEVPATH=$(readlink -f "/sys/class/net/$INTERFACE/device" 2>/dev/null)
+case "$DEVPATH" in
+	*usb*) ;;
+	*) exit 0 ;;
+esac
+uci -q get network.usbwan >/dev/null 2>&1 || {
+	uci -q set network.usbwan=interface
+	uci -q set network.usbwan.proto='dhcp'
+	uci -q set network.usbwan.metric='50'
+}
+uci -q set network.usbwan.device="$INTERFACE"
+uci -q commit network
 /etc/init.d/network reload
 /etc/init.d/firewall reload
 exit 0

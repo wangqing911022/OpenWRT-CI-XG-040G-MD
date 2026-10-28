@@ -55,6 +55,12 @@ if [ ! -d "./libs/libffi" ] && [ ! -d "./libffi" ]; then
 	echo "libffi has been added!"
 fi
 
+#设备监控（本机 + 局域网设备，Web 端口 7752）
+if [ ! -d "./luci-app-systemmon" ]; then
+	cp -rf "$GITHUB_WORKSPACE/Packages/luci-app-systemmon" ./
+	echo "systemmon has been added!"
+fi
+
 #iStore 商店（含 taskd、luci-lib-taskd、luci-lib-xterm）
 if [ ! -d "./luci-app-store" ]; then
 	git clone -q --depth=1 --single-branch --branch main https://github.com/istoreos/istore.git ./istore-src
@@ -76,7 +82,17 @@ if [ ! -d "./luci-app-quickstart" ]; then
 	rm -rf ./nas-luci-src
 	#修复 apk 不接受 0.12.10-r1 这种版本号
 	sed -i 's/^PKG_VERSION:=0.12.10-r1$/PKG_VERSION:=0.12.10\nPKG_RELEASE:=1/' ./luci-app-quickstart/Makefile
+	#移除 Quickstart 的 S.M.A.R.T. 菜单
+	sed -i '/"nas", "smart"/d' ./luci-app-quickstart/luasrc/controller/quickstart.lua
 	echo "official quickstart UI has been added!"
+fi
+
+#ONU 配置插件（naoki66/OpenWrt_ONU_CONFIG）
+if [ ! -d "./luci-app-onu" ]; then
+	git clone -q --depth=1 --single-branch --branch main https://github.com/naoki66/OpenWrt_ONU_CONFIG.git ./onu-config-src
+	cp -rf ./onu-config-src/luci-app-onu ./
+	rm -rf ./onu-config-src
+	echo "luci-app-onu has been added!"
 fi
 
 #Homebox / netspeedtest
