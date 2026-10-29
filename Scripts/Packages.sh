@@ -94,6 +94,8 @@ if [ ! -d "./luci-app-onu" ]; then
 	rm -rf ./onu-config-src
 	echo "luci-app-onu has been added!"
 fi
+#当前内核源没有 kmod-nf-conntrack-bridge，移除该可选依赖
+sed -i 's/ +kmod-nf-conntrack-bridge//' ./luci-app-onu/Makefile
 
 #Homebox / netspeedtest
 if [ ! -d "./homebox" ]; then
