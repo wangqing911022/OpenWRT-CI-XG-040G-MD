@@ -82,8 +82,8 @@ if [ ! -d "./luci-app-quickstart" ]; then
 	rm -rf ./nas-luci-src
 	#修复 apk 不接受 0.12.10-r1 这种版本号
 	sed -i 's/^PKG_VERSION:=0.12.10-r1$/PKG_VERSION:=0.12.10\nPKG_RELEASE:=1/' ./luci-app-quickstart/Makefile
-	#移除 Quickstart 的 S.M.A.R.T. 菜单
-	sed -i '/"nas", "smart"/d' ./luci-app-quickstart/luasrc/controller/quickstart.lua
+	#移除 Quickstart 的 S.M.A.R.T. 和磁盘阵列菜单
+	sed -i '/"nas", "smart"/d; /"nas", "raid"/d' ./luci-app-quickstart/luasrc/controller/quickstart.lua
 	echo "official quickstart UI has been added!"
 fi
 
@@ -136,11 +136,13 @@ if [ ! -d "./wrtbwmon" ]; then
 	echo "wrtbwmon backend has been added!"
 fi
 
-#主题：先彻底移除所有旧主题包（luci-theme-*），再重新拉取 luci-theme-argon 最新版
-#openwrt-25.12 是 sbwml/luci-theme-argon 的默认分支，即当前最新分支
-find ../feeds -maxdepth 4 -type d -iname "luci-theme-*" -print0 2>/dev/null | xargs -0 rm -rf 2>/dev/null || true
-rm -rf ./luci-theme-* ./luci-app-argon-config 2>/dev/null || true
-UPDATE_PACKAGE "argon" "sbwml/luci-theme-argon" "openwrt-25.12"
+#官方 Argon 主题 v3.1.1（自带配置页面和 bg1.webp 默认登录背景）
+UPDATE_PACKAGE "argon" "jerrykuku/luci-theme-argon" "v3.1.1"
+if [ -f "./luci-theme-argon/root/etc/config/argon" ]; then
+	sed -i "s/option font_weight '.*'/option font_weight 'normal'/" ./luci-theme-argon/root/etc/config/argon
+	grep -q "option font_weight" ./luci-theme-argon/root/etc/config/argon || sed -i "/option mode 'normal'/a\\\toption font_weight 'normal'" ./luci-theme-argon/root/etc/config/argon
+	sed -i "s/option online_wallpaper '.*'/option online_wallpaper 'none'/" ./luci-theme-argon/root/etc/config/argon
+fi
 
 #UPDATE_PACKAGE "homeproxy" "VIKINGYFY/homeproxy" "main"
 #UPDATE_PACKAGE "momo" "nikkinikki-org/OpenWrt-momo" "main"

@@ -31,10 +31,12 @@ if [ -d *"luci-theme-argon"* ]; then
 	echo " " && cd ./luci-theme-argon/
 
 	#修复 Argon 首页内存/磁盘/网络进度条显示异常（新版 LuCI 状态页不使用 conic-gradient 标记）
-	ARGON_CSS="./luci-theme-argon/htdocs/luci-static/argon/css/cascade.css"
-	ARGON_DARK="./luci-theme-argon/htdocs/luci-static/argon/css/dark.css"
-	[ -f "$ARGON_CSS" ] && sed -i '/^body\[data-page="admin-status-overview"\] \.cbi-progressbar,$/,/^#modal_overlay {$/{/^#modal_overlay {$/!d}' "$ARGON_CSS"
-	[ -f "$ARGON_DARK" ] && sed -i '/^body\[data-page="admin-status-overview"\] \.cbi-progressbar/,/^}$/d' "$ARGON_DARK"
+	for ARGON_CSS in ./htdocs/luci-static/argon/css/cascade.css ./luci-theme-argon/htdocs/luci-static/argon/css/cascade.css; do
+		[ -f "$ARGON_CSS" ] && sed -i '/^body\[data-page="admin-status-overview"\] \.cbi-progressbar,$/,/^#modal_overlay {$/{/^#modal_overlay {$/!d}' "$ARGON_CSS"
+	done
+	for ARGON_DARK in ./htdocs/luci-static/argon/css/dark.css ./luci-theme-argon/htdocs/luci-static/argon/css/dark.css; do
+		[ -f "$ARGON_DARK" ] && sed -i '/^body\[data-page="admin-status-overview"\] \.cbi-progressbar/,/^}$/d' "$ARGON_DARK"
+	done
 
 	cd $PKG_PATH && echo "theme-argon has been fixed!"
 fi

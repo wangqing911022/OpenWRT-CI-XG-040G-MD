@@ -48,17 +48,18 @@ uci -q commit system
 uci -q set firewall.@defaults[0].flow_offloading='0'
 uci -q set firewall.@defaults[0].flow_offloading_hw='0'
 uci -q commit firewall
-#清理全部旧主题，仅保留重新拉取的 argon
-for t in $(uci -q show luci.themes | cut -d. -f3 | cut -d= -f1); do uci -q delete luci.themes.$t; done
-uci -q set luci.themes.Argon='/luci-static/argon'
+uci -q delete luci.themes.Alpha
+uci -q delete luci.themes.Glass
+uci -q delete luci.themes.Aurora
+uci -q delete luci.themes.Liquid
 uci -q set luci.main.mediaurlbase='/luci-static/argon'
-#清除 argon 自定义登录背景设置，恢复主题默认背景
-uci -q delete argon.@global[0].background
-uci -q delete argon.@global[0].background_path
-uci -q set argon.@global[0].online_wallpaper='none'
 uci -q set argon.@global[0].primary='#5e72e4'
-uci -q set argon.@global[0].transparency='0.2'
-uci -q set argon.@global[0].font_weight='600'
+uci -q set argon.@global[0].dark_primary='#483d8b'
+uci -q set argon.@global[0].transparency='0.5'
+uci -q set argon.@global[0].transparency_dark='0.5'
+uci -q set argon.@global[0].online_wallpaper='none'
+uci -q set argon.@global[0].font_weight='normal'
+uci -q set argon.@global[0].login_style='classic'
 uci -q commit luci
 uci -q commit argon
 uci -q batch <<-USBWAN_EOF
@@ -118,7 +119,6 @@ chmod +x ./package/base-files/files/etc/hotplug.d/net/40-usb-tethering
 echo "CONFIG_PACKAGE_luci=y" >> ./.config
 echo "CONFIG_LUCI_LANG_zh_Hans=y" >> ./.config
 echo "CONFIG_PACKAGE_luci-theme-$WRT_THEME=y" >> ./.config
-echo "CONFIG_PACKAGE_luci-app-$WRT_THEME-config=y" >> ./.config
 
 #引入私有扩展配置
 if [ -f "$GITHUB_WORKSPACE/Config/PRIVATE.txt" ]; then
