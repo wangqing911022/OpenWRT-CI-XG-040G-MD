@@ -136,7 +136,10 @@ if [ ! -d "./wrtbwmon" ]; then
 	echo "wrtbwmon backend has been added!"
 fi
 
-#argon 主题（保留唯一主题，openwrt-25.12 为当前最新分支）
+#主题：先彻底移除所有旧主题包（luci-theme-*），再重新拉取 luci-theme-argon 最新版
+#openwrt-25.12 是 sbwml/luci-theme-argon 的默认分支，即当前最新分支
+find ../feeds -maxdepth 4 -type d -iname "luci-theme-*" -print0 2>/dev/null | xargs -0 rm -rf 2>/dev/null || true
+rm -rf ./luci-theme-* ./luci-app-argon-config 2>/dev/null || true
 UPDATE_PACKAGE "argon" "sbwml/luci-theme-argon" "openwrt-25.12"
 
 #UPDATE_PACKAGE "homeproxy" "VIKINGYFY/homeproxy" "main"
