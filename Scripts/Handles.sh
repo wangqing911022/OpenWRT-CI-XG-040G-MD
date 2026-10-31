@@ -119,3 +119,15 @@ if [ -f "$RUST_FILE" ]; then
 
 	cd $PKG_PATH && echo "rust has been fixed!"
 fi
+
+#修复 LuCI 批量 RPC 只在 requestAnimationFrame 回调里发送导致的页面卡死
+#（后台标签页、被遮挡的窗口或 WebView 中 rAF 被浏览器停掉时，所有 ubus 请求不会发出，
+# 页面会一直停在“加载视图中…”）
+LUCI_JS=$(find ../feeds/luci/ -maxdepth 8 -type f -path "*/htdocs/luci-static/resources/luci.js" | head -n 1)
+if [ -n "$LUCI_JS" ] && [ -f "$LUCI_JS" ]; then
+	echo " "
+
+	sed -i 's/requestAnimationFrame(flushRequestQueue)/setTimeout(flushRequestQueue,0)/g' "$LUCI_JS"
+
+	grep -q 'setTimeout(flushRequestQueue,0)' "$LUCI_JS" && echo "luci.js request batching has been fixed!"
+fi

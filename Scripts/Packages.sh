@@ -94,6 +94,10 @@ if [ -d "./luci-app-quickstart" ]; then
 	if [ -f "$QS_MAIN" ] && ! grep -q 'pon-temp.js' "$QS_MAIN"; then
 		awk -v v="$WRT_DATE" '{ if ($0 ~ /<%\+footer%>/) print "<script src=\"/luci-static/quickstart/pon-temp.js?v=" v "\"></script>"; print }' "$QS_MAIN" > "$QS_MAIN.new" && mv "$QS_MAIN.new" "$QS_MAIN"
 	fi
+	#每次构建都刷新首页静态资源版本号，避免刷机后浏览器继续复用旧固件缓存的 JS/CSS
+	if [ -f "$QS_MAIN" ]; then
+		sed -i -E "s#(/luci-static/quickstart/[^\"'?]+)\?v=[^\"']*#\1?v=$WRT_DATE#g" "$QS_MAIN"
+	fi
 	echo "quickstart PON temperature card has been added!"
 fi
 
