@@ -32,7 +32,57 @@ if [ -d *"luci-theme-argon"* ]; then
 
 	#修复 Argon 首页内存/磁盘/网络进度条显示异常（新版 LuCI 状态页不使用 conic-gradient 标记）
 	for ARGON_CSS in ./htdocs/luci-static/argon/css/cascade.css ./luci-theme-argon/htdocs/luci-static/argon/css/cascade.css; do
-		[ -f "$ARGON_CSS" ] && sed -i '/^body\[data-page="admin-status-overview"\] \.cbi-progressbar,$/,/^#modal_overlay {$/{/^#modal_overlay {$/!d}' "$ARGON_CSS"
+		if [ -f "$ARGON_CSS" ]; then
+			sed -i '/^body\[data-page="admin-status-overview"\] \.cbi-progressbar,$/,/^#modal_overlay {$/{/^#modal_overlay {$/!d}' "$ARGON_CSS"
+			cat >> "$ARGON_CSS" <<'ARGON_PROGRESS_FIX'
+/* Align status page memory/storage percentage text inside the progress bar */
+[data-page="admin-status-overview"] .cbi-progressbar,
+[data-page="admin-status"] .cbi-progressbar {
+  display: block;
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  height: 1.3rem;
+  min-height: 1.3rem;
+  margin: 0.15rem 0;
+  background: var(--progress-bg, #eee);
+  border-radius: var(--radius-pill, 999px);
+  overflow: hidden;
+}
+[data-page="admin-status-overview"] .cbi-progressbar::before,
+[data-page="admin-status"] .cbi-progressbar::before {
+  display: none;
+}
+[data-page="admin-status-overview"] .cbi-progressbar > div,
+[data-page="admin-status"] .cbi-progressbar > div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: var(--progress-fill, var(--primary, #5e72e4));
+  border-radius: inherit;
+}
+[data-page="admin-status-overview"] .cbi-progressbar::after,
+[data-page="admin-status"] .cbi-progressbar::after {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.4rem;
+  font-size: 0.7rem;
+  line-height: 1;
+  color: var(--progressbar-font-color, var(--text-strong, #2e2b60));
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: ltr;
+  unicode-bidi: isolate;
+  z-index: 2;
+}
+ARGON_PROGRESS_FIX
+		fi
 	done
 	for ARGON_DARK in ./htdocs/luci-static/argon/css/dark.css ./luci-theme-argon/htdocs/luci-static/argon/css/dark.css; do
 		[ -f "$ARGON_DARK" ] && sed -i '/^body\[data-page="admin-status-overview"\] \.cbi-progressbar/,/^}$/d' "$ARGON_DARK"
