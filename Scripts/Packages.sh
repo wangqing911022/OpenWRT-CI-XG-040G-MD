@@ -87,6 +87,16 @@ if [ ! -d "./luci-app-quickstart" ]; then
 	echo "official quickstart UI has been added!"
 fi
 
+#注入 PON 温度环形卡片（普通橙色）
+if [ -d "./luci-app-quickstart" ]; then
+	cp -f "$GITHUB_WORKSPACE/Packages/quickstart-pon-temp.js" ./luci-app-quickstart/htdocs/luci-static/quickstart/pon-temp.js
+	QS_MAIN=./luci-app-quickstart/luasrc/view/quickstart/main.htm
+	if [ -f "$QS_MAIN" ] && ! grep -q 'pon-temp.js' "$QS_MAIN"; then
+		awk '{ if ($0 ~ /<%\+footer%>/) print "<script src=\"/luci-static/quickstart/pon-temp.js\"></script>"; print }' "$QS_MAIN" > "$QS_MAIN.new" && mv "$QS_MAIN.new" "$QS_MAIN"
+	fi
+	echo "quickstart PON temperature card has been added!"
+fi
+
 #ONU 配置插件（naoki66/OpenWrt_ONU_CONFIG）
 if [ ! -d "./luci-app-onu" ]; then
 	git clone -q --depth=1 --single-branch --branch main https://github.com/naoki66/OpenWrt_ONU_CONFIG.git ./onu-config-src
