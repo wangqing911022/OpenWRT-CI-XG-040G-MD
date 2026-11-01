@@ -95,8 +95,20 @@ if [ -d "./luci-app-quickstart" ]; then
 		awk -v v="$WRT_DATE" '{ if ($0 ~ /<%\+footer%>/) print "<script src=\"/luci-static/quickstart/pon-temp.js?v=" v "\"></script>"; print }' "$QS_MAIN" > "$QS_MAIN.new" && mv "$QS_MAIN.new" "$QS_MAIN"
 	fi
 	#每次构建都刷新首页静态资源版本号，避免刷机后浏览器继续复用旧固件缓存的 JS/CSS
+	#上游 main.htm 有两种写法：?v=0.12.10，或被模板注释掉的 <%# ?v=PKG_VERSION %>。
+	#必须先去掉注释包装再替换版本号，否则会把注释结束符 %> 一起吃掉，整个模板损坏（首页空白）
 	if [ -f "$QS_MAIN" ]; then
-		sed -i -E "s#(/luci-static/quickstart/[^\"'?]+)\?v=[^\"']*#\1?v=$WRT_DATE#g" "$QS_MAIN"
+		cp -f "$QS_MAIN" "$QS_MAIN.bak"
+		sed -i 's|<%# ?v=PKG_VERSION %>|?v=PKG_VERSION|g' "$QS_MAIN"
+		sed -i -E "s#(/luci-static/quickstart/[^\"'?]+)\?v=[^\"'>]*#\1?v=$WRT_DATE#g" "$QS_MAIN"
+		#安全兜底：模板结构被破坏时回滚，宁可不换版本号也不能让首页空白
+		if grep -q '<%#' "$QS_MAIN" || ! grep -q '<%+footer%>' "$QS_MAIN"; then
+			cp -f "$QS_MAIN.bak" "$QS_MAIN"
+			echo "quickstart main.htm rollback: template integrity check failed!"
+		fi
+		rm -f "$QS_MAIN.bak"
+		#把最终资源行打进构建日志，方便确认版本号替换结果
+		grep -n 'luci-static/quickstart' "$QS_MAIN" | sed 's/^/  QS: /'
 	fi
 	echo "quickstart PON temperature card has been added!"
 fi
